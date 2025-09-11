@@ -10,6 +10,16 @@
 </head>
 <body>
     <h3 class="title">Minesweeper</h3>
+    <div class="settings">
+        <label for="difficulty">Difficulty:</label>
+        <select id="difficulty">
+            <option value="easy">Easy (8x8, 10 mines)</option>
+            <option value="medium">Medium (9x9, 10 mines)</option>
+            <option value="hard">Hard (10x10, 10 mines)</option>
+            <option value="expert">Expert (13x15, 40 mines)</option>
+        </select>
+        <button id="new-game-btn">New Game</button>
+    </div>
     <div class="subtext">
         Mines Left: <span data-mine-count>10</span>
     </div>

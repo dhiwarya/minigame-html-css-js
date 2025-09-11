@@ -5,13 +5,13 @@ export const TILE_STATUSES = {
     MARKED: 'marked',
 }
 
-export function drawBoard(boardSize, numberOfMines) {
+export function drawBoard(width, height, numberOfMines) {
     const board = []
-    const minePositions = getMinePositions(boardSize, numberOfMines)
+    const minePositions = getMinePositions(width, height, numberOfMines)
 
-    for (let x = 0; x < boardSize; x++) {
+    for (let x = 0; x < width; x++) {
         const row = []
-        for (let y = 0; y < boardSize; y++) {
+        for (let y = 0; y < height; y++) {
             const element = document.createElement('div')
             element.dataset.status = TILE_STATUSES.HIDDEN
             const tile = {
@@ -33,13 +33,13 @@ export function drawBoard(boardSize, numberOfMines) {
     return board
 }
 
-function getMinePositions(boardSize, numberOfMines) {
+function getMinePositions(width, height, numberOfMines) {
     const positions = []
 
     while (positions.length < numberOfMines) {
         const position = {
-            x: randomNumber(boardSize),
-            y: randomNumber(numberOfMines)
+            x: randomNumber(width),
+            y: randomNumber(height)
         }
         if (!positions.some(p => positionMatch(p, position))) {
             positions.push(position)
@@ -68,4 +68,62 @@ export function markTile(tile) {
     } else {
         tile.status = TILE_STATUSES.MARKED
     }
+}
+
+export function revealTile(board, tile) {
+    if (tile.status !== TILE_STATUSES.HIDDEN) {
+        return
+    }
+
+    if (tile.mine) {
+        tile.status = TILE_STATUSES.MINE
+        return
+    }
+
+    tile.status = TILE_STATUSES.NUMBER
+    const adjacentTiles = nearbyTiles(board, tile)
+    const mines = adjacentTiles.filter(t => t.mine)
+    if (mines.length === 0) {
+        adjacentTiles.forEach(revealTile.bind(null, board))
+    } else {
+        tile.element.textContent = mines.length
+    }
+}
+
+function nearbyTiles(board, { x, y }) {
+    const tiles = []
+
+    for (let xOffset = -1; xOffset <= 1; xOffset++) {
+        for (let yOffset = -1; yOffset <= 1; yOffset++) {
+            const newX = x + xOffset
+            const newY = y + yOffset
+            if (newX >= 0 && newX < board.length && newY >= 0 && newY < board[0].length) {
+                const tile = board[newX][newY]
+                if(tile) tiles.push(tile)
+            }
+        }
+    }
+
+    return tiles
+}
+
+export function checkWin(board) {
+    return board.every(row => {
+      return row.every(tile => {
+        return (
+          tile.status === TILE_STATUSES.NUMBER ||
+          (tile.mine &&
+            (tile.status === TILE_STATUSES.HIDDEN ||
+              tile.status === TILE_STATUSES.MARKED))
+        )
+      })
+    })
+}
+  
+export function checkLose(board) {
+    return board.some(row => {
+      return row.some(tile => {
+        return tile.status === TILE_STATUSES.MINE
+      })
+    })
 }
