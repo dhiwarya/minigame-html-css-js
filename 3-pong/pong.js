@@ -51,15 +51,27 @@ function draw() {
     x += dx
     y += dy
 
-    // Move the ball horizontally and vertically
-    if (x + ballRadius > canvas.width / scale || x - ballRadius < 0) {
-        dx = -dx
-    } else if (
-        x + ballRadius >= paddleX && // Ball reaches paddle's left edge
+    // Ball hits left paddle
+    if (
+        x - ballRadius <= paddleA + paddleWidth && // Ball reaches right edge of left paddle
+        y >= paddleB &&                           // Ball is below paddle's top
+        y <= paddleB + paddleHeight               // Ball is above paddle's bottom
+    ) {
+        dx = -dx; // Bounce back
+    }
+
+    // Ball hits right paddle
+    if (
+        x + ballRadius >= paddleX && // Ball reaches left edge of right paddle
         y >= paddleY &&              // Ball is below paddle's top
         y <= paddleY + paddleHeight  // Ball is above paddle's bottom
     ) {
         dx = -dx; // Bounce back
+    }
+
+    // Wall collision
+    if (x + ballRadius > canvas.width / scale || x - ballRadius < 0) {
+        dx = -dx
     }
 
     if (y + ballRadius > canvas.height / scale || y - ballRadius < 0) {
@@ -79,7 +91,6 @@ function draw() {
     } else if (sPressed) {
         paddleB = Math.min(canvas.height / scale - paddleHeight, paddleB + 3);
     }
-
 
 }
 
