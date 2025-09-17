@@ -22,6 +22,9 @@ let paddleWidth = 10
 
 let paddleX = canvas.width / scale - (paddleWidth + 10) // Right edge in CSS pixels
 let paddleY = (canvas.height / scale - paddleHeight) / 2 // Vertically centered
+let paddleA = 10;
+let paddleB = (canvas.height / scale - paddleHeight) / 2 // Setting up the second paddle
+
 
 function drawBall() {
     ctx.beginPath();
@@ -30,9 +33,9 @@ function drawBall() {
     ctx.fill()
 }
 
-function drawPaddle() {
+function drawPaddle(x, y) {
     ctx.beginPath();
-    ctx.rect(paddleX, paddleY, paddleWidth, paddleHeight)
+    ctx.rect(x, y, paddleWidth, paddleHeight)
     ctx.fillStyle = COLOR.ballColor
     ctx.fill();
     ctx.closePath();
@@ -42,7 +45,8 @@ function draw() {
     console.log("draw called")
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     drawBall()
-    drawPaddle()
+    drawPaddle(paddleA, paddleB)
+    drawPaddle(paddleX, paddleY)
 
     x += dx
     y += dy
@@ -69,6 +73,23 @@ function draw() {
         paddleY = Math.min(canvas.height / scale - paddleHeight, paddleY + 3);
     }
 
+    // Move the left paddle vertically
+    if (wPressed) {
+        paddleB = Math.max(0, paddleB - 3);
+    } else if (sPressed) {
+        paddleB = Math.min(canvas.height / scale - paddleHeight, paddleB + 3);
+    }
+
+
+}
+
+function gameOver() {
+    gameRunning = false;
+    cancelAnimationFrame(animationFrameId);
+    ctx.font = "24px Arial";
+    ctx.fillStyle = "#de5b2fff";
+    ctx.textAlign = "center";
+    ctx.fillText("GAME OVER", canvas.width * scale / 2, canvas.height * scale /2)
 }
 
 document.addEventListener('keydown', function(event) {
@@ -76,6 +97,10 @@ document.addEventListener('keydown', function(event) {
         upPressed = true;
     } else if (event.key === "ArrowDown") {
         downPressed = true;
+    } else if (event.key === "w" || event.key === "W") {
+        wPressed = true;
+    } else if (event.key === "s" || event.key === "S") {
+        sPressed = true;
     }
 })
 
@@ -84,6 +109,10 @@ document.addEventListener('keyup', function(event) {
         upPressed = false;
     } else if (event.key === "ArrowDown") {
         downPressed = false;
+    } else if (event.key === "w" || event.key === "W") {
+        wPressed = false;
+    } else if (event.key === "s" || event.key === "S") {
+        sPressed = false;
     }
 })
 
