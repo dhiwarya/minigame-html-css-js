@@ -71,9 +71,8 @@ function draw() {
 
     // Wall collision
     if (x + ballRadius > canvas.width / scale || x - ballRadius < 0) {
-        dx = -dx
+        gameOver()
     }
-
     if (y + ballRadius > canvas.height / scale || y - ballRadius < 0) {
         dy = -dy
     }
@@ -96,11 +95,11 @@ function draw() {
 
 function gameOver() {
     gameRunning = false;
-    cancelAnimationFrame(animationFrameId);
+    clearInterval(intervalId)
     ctx.font = "24px Arial";
     ctx.fillStyle = "#de5b2fff";
     ctx.textAlign = "center";
-    ctx.fillText("GAME OVER", canvas.width * scale / 2, canvas.height * scale /2)
+    ctx.fillText("GAME OVER", canvas.width / (2 * scale), canvas.height / (2 * scale));
 }
 
 document.addEventListener('keydown', function(event) {
@@ -128,4 +127,4 @@ document.addEventListener('keyup', function(event) {
 })
 
 // Start animation loop
-setInterval(draw, 10)
+let intervalId= setInterval(draw, 10)
